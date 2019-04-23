@@ -3,7 +3,7 @@
 #![warn(missing_docs)]
 #![warn(unused_extern_crates)]
 
-mod chain_spec;
+pub mod chain_spec;
 mod service;
 mod cli;
 
@@ -23,3 +23,13 @@ fn run() -> cli::error::Result<()> {
 }
 
 error_chain::quick_main!(run);
+
+#[cfg(test)]
+mod tests {
+	use super::*;
+	#[test]
+	fn test_for_demo() {
+		println!("Alice: {:?}",chain_spec::account_key("Alice"));
+		println!("Bob  : {:?}",chain_spec::account_key("Bob"));
+	}
+}

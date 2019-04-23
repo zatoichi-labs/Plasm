@@ -30,8 +30,13 @@ fn authority_key(s: &str) -> AuthorityId {
 		.public()
 }
 
-fn account_key(s: &str) -> AccountId {
-	sr25519::Pair::from_string(&format!("//{}", s), None)
+pub fn account_key(s: &str) -> AccountId {
+	let mut seed = s.to_string();
+	while seed.len() < 32 {
+		seed += " ";
+	}
+	println!("{}, {:?}", &seed, &seed.as_bytes());
+	sr25519::Pair::from_seed_slice(&seed.as_bytes())
 		.expect("static values are valid; qed")
 		.public()
 }
