@@ -35,7 +35,6 @@ pub fn account_key(s: &str) -> AccountId {
 	while seed.len() < 32 {
 		seed += " ";
 	}
-	println!("{}, {:?}", &seed, &seed.as_bytes());
 	sr25519::Pair::from_seed_slice(&seed.as_bytes())
 		.expect("static values are valid; qed")
 		.public()

@@ -10,7 +10,7 @@ use sr_primitives::{
 use primitives::{sr25519, Pair, Blake2Hasher, H256};
 use std::clone::Clone;
 
-// plasm pritmitives uses plasm_primitives::mvp::Value
+// plasm pritmitives uses MVPValue
 use plasm_primitives;
 use plasm_merkle::{MerkleTreeTrait, ProofTrait};
 
@@ -31,6 +31,8 @@ pub type AccountId = <Signature as Verify>::Signer;
 
 pub type MerkleTree = plasm_merkle::mock::MerkleTree<H256, BlakeTwo256>;
 
+pub type MVPValue = plasm_primitives::mvp::Value;
+
 impl system::Trait for Test {
 	type Origin = Origin;
 	type Index = u64;
@@ -48,7 +50,7 @@ impl system::Trait for Test {
 impl Trait for Test {
 	type Signature = Signature;
 	type TimeLock = Self::BlockNumber;
-	type Value = plasm_primitives::mvp::Value;
+	type Value = MVPValue;
 
 	type Input = TransactionInput<H256>;
 	type Output = TransactionOutput<Self::Value, Self::AccountId>;
@@ -101,7 +103,7 @@ fn sign(tx: &<Test as Trait>::Transaction, key_pair: &sr25519::Pair) -> <Test as
 }
 
 fn genesis_tx(root: &sr25519::Pair) -> Vec<(<Test as Trait>::Value, <Test as system::Trait>::AccountId)> {
-	vec! {(plasm_primitives::mvp::Value::new(1 << 60), root.public()), }
+	vec! {(MVPValue::new(1 << 60), root.public()), }
 }
 
 // This function basically just builds ax genesis storage key/value store according to
@@ -143,7 +145,7 @@ fn mvp_minimum_works() {
 		let receiver_key_pair = account_key_pair("test_receiver");
 		let new_signed_tx = sign(
 			&gen_normal_tx(exp_gen_outpoint.0,
-						   exp_gen_outpoint.1, plasm_primitives::mvp::Value::new(1 << 59), receiver_key_pair.public()),
+						   exp_gen_outpoint.1, MVPValue::new(1 << 59), receiver_key_pair.public()),
 			&root_key_pair,
 		);
 		assert_ok!(UTXO::execute(Origin::signed(root_key_pair.public()), new_signed_tx.encode()));
@@ -187,6 +189,46 @@ fn mvp_minimum_works() {
 	});
 }
 
+// == for demo ==================================================================================
+fn account_key_pair_for_demo(s: &str) -> AccountId {
+	let mut seed = s.to_string();
+	while seed.len() < 32 {
+		seed += " ";
+	}
+	sr25519::Pair::from_seed_slice(&seed.as_bytes())
+		.expect("static values are valid; qed")
+		.public()
+}
+
+fn new_test_ext_for_demo(endowed_accounts: &Vec<AccountId>) -> runtime_io::TestExternalities<Blake2Hasher> {
+	let mut t = system::GenesisConfig::<Test>::default().build_storage().unwrap().0;
+	t.extend(GenesisConfig::<Test> {
+		genesis_tx: endowed_accounts.iter().cloned().map(|k| (MVPValue::new(1 << 60), k)).collect(),
+	}.build_storage().unwrap().0);
+	t.into()
+}
+
+#[test]
+fn test_for_demo() {
+	let endowed_accounts = vec![account_key_pair_for_demo("Alice")];
+	let root_key = &endowed_accounts[0];
+	with_externalities(&mut new_test_ext_for_demo(&endowed_accounts), || {
+		// check merkle root ============================== different default
+		let root_hash = MerkleTree::root();
+
+		let receiver = account_key_pair_for_demo("Bob");
+
+		// check reference of genesis tx.
+		let ref_utxo = <UnspentOutputsFinder<Test>>::get(&endowed_accounts[0]).unwrap()[0];
+		println!("ref_utxo:{:?}", ref_utxo);
+		let gen_tx_1 = gen_normal_tx(ref_utxo.0, ref_utxo.1, MVPValue::new(1000), receiver.clone());
+		let gen_tx_out = &gen_tx_1.outputs()[0];
+		println!("gen_tx_out: {:?}, hash: {:?}", gen_tx_out, BlakeTwo256::hash_of(gen_tx_out));
+		println!("gen_tx_1: {:?}", gen_tx_1);
+		println!("gen_tx_1_hash: {:?}", BlakeTwo256::hash_of(&gen_tx_1));
+	});
+}
+
 //#[test]
 //fn minimum_works() { // TODO fix divided tests.
 //	let root_key_pair = account_key_pair("test_root");
@@ -214,7 +256,7 @@ fn mvp_minimum_works() {
 //		let receiver_key_pair = account_key_pair("test_receiver");
 //		let new_signed_tx = sign(
 //			&gen_normal_tx(exp_gen_outpoint.0,
-//						   exp_gen_outpoint.1, plasm_primitives::mvp::Value::new(1 << 59), receiver_key_pair.public()),
+//						   exp_gen_outpoint.1, MVPValue::new(1 << 59), receiver_key_pair.public()),
 //			&root_key_pair,
 //		);
 //		assert_ok!(UTXO::execute(Origin::signed(1), new_signed_tx.encode()));
