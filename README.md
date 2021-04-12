@@ -37,9 +37,9 @@ Introduction
 Plasm Network is a scalable and interoperable infrastructure for Web3.0. Since Plasm Network is built with [Parity’s Substrate framework](https://www.substrate.io/), it can be a future [Polkadot](https://polkadot.network/) Parachain that also acts as a scalable smart contract platform. The Polkadot Relaychain, by design, does not support smart contracts. This allows Plasm the opportunity to fill in this gap. Scalability is obviously one of the most crucial demands DApp developers have. Ideally, the developers can build whatever applications on Plasm Network without having to consider its scalability.
 
 Based on the above, Plasm has some features.
-- **[Optimistic Virtual Machine](https://docs.plasmnet.io/learn/optimistic-virtual-machine)**
-- **[DApps Reward](https://docs.plasmnet.io/learn/dapps-reward)**
-- **[Operator Trading](https://docs.plasmnet.io/learn/operator-trading)**
+- **[Optimistic Virtual Machine](https://docs.plasmnet.io/learn/layer2/optimistic-virtual-machine)**
+- **[DApps Reward](https://docs.plasmnet.io/learn/core-features/dapps-reward)**
+- **[Operator Trading](https://docs.plasmnet.io/learn/core-features/operator-trading)**
 - **[Lockdrop](https://docs.plasmnet.io/learn/lockdrop)**
 
 Once Polkadot is launched, we will connect our root chain to Polkadot, and we aim to be one of the parachains.
@@ -104,7 +104,7 @@ Plasm Validator Program
 
 Currently, we have 2 networks, [Dusty Network](https://telemetry.polkadot.io/#list/Dusty) and [Plasm Network](https://telemetry.polkadot.io/#list/Plasm). Dusty is our canary R&D chain like Kusama. The stable validators on Dusty can be the first validators on Plasm mainnet. We are looking for 100 validators on the Plasm Network. 
 
-If you would like to be the validator, please check out [our tutorial](https://docs.plasmnet.io/workshop-and-tutorial/untitled) and join [Discord tech channel](https://discord.gg/wUcQt3R)
+If you would like to be the validator, please check out [our tutorial](https://docs.plasmnet.io/build/validator-guide) and join [Discord tech channel](https://discord.gg/wUcQt3R)
 
 Examples
 ========
